@@ -3,20 +3,18 @@ package com.gcbjr.btcnetwork.bitcoin;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.wallet.Wallet;
-import org.bitcoinj.wallet.listeners.WalletCoinsReceivedEventListener;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
-@Component
+//@Component
 public class ForwardingService {
 
     @Autowired
@@ -54,6 +52,14 @@ public class ForwardingService {
                 }
             }, bitcoinExecutor);
         });
+
+        Wallet wallet = walletAppKit.wallet();
+        DeterministicKey watchingKey = wallet.getWatchingKey();
+        System.out.println("Watching key data: " + watchingKey.serializePubB58(networkParameters));
+        System.out.println("Watching key birthday: " + watchingKey.getCreationTimeSeconds());
+
+//        DeterministicKey key = DeterministicKey.deserializeB58(null, "key data goes here", networkParameters);
+//        Wallet watchingWallet = Wallet.fromWatchingKey(networkParameters, key);
 
         Address sendToAddress = LegacyAddress.fromKey(networkParameters, walletAppKit.wallet().currentReceiveKey());
         System.out.println("Send coins to: " + sendToAddress);
